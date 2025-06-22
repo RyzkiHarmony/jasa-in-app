@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  RefreshControl
-} from 'react-native';
-import getDatabase from '../../database/database';
-import { useAuth } from '../../context/AuthContext';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+  RefreshControl,
+} from "react-native";
+import getDatabase from "../../database/database";
+import { useAuth } from "../../context/AuthContext";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const DashboardScreen = ({ navigation }) => {
   const [stats, setStats] = useState({
@@ -18,14 +18,14 @@ const DashboardScreen = ({ navigation }) => {
     pendingBookings: 0,
     completedBookings: 0,
     totalRevenue: 0,
-    totalServices: 0
+    totalServices: 0,
   });
   const [recentBookings, setRecentBookings] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       loadDashboardData();
     });
 
@@ -40,7 +40,7 @@ const DashboardScreen = ({ navigation }) => {
   const loadStats = () => {
     try {
       const db = getDatabase();
-      
+
       // Get total bookings
       const totalBookingsResult = db.getAllSync(
         `SELECT COUNT(*) as total FROM bookings b
@@ -49,7 +49,7 @@ const DashboardScreen = ({ navigation }) => {
         [user.id]
       );
       const totalBookings = totalBookingsResult[0]?.total || 0;
-      
+
       // Get pending bookings
       const pendingBookingsResult = db.getAllSync(
         `SELECT COUNT(*) as pending FROM bookings b
@@ -58,7 +58,7 @@ const DashboardScreen = ({ navigation }) => {
         [user.id]
       );
       const pendingBookings = pendingBookingsResult[0]?.pending || 0;
-      
+
       // Get completed bookings
       const completedBookingsResult = db.getAllSync(
         `SELECT COUNT(*) as completed FROM bookings b
@@ -67,7 +67,7 @@ const DashboardScreen = ({ navigation }) => {
         [user.id]
       );
       const completedBookings = completedBookingsResult[0]?.completed || 0;
-      
+
       // Get total revenue
       const totalRevenueResult = db.getAllSync(
         `SELECT COALESCE(SUM(b.total_price), 0) as revenue FROM bookings b
@@ -76,23 +76,23 @@ const DashboardScreen = ({ navigation }) => {
         [user.id]
       );
       const totalRevenue = totalRevenueResult[0]?.revenue || 0;
-      
+
       // Get total services
       const totalServicesResult = db.getAllSync(
-        'SELECT COUNT(*) as total FROM services WHERE umkm_id = ?',
+        "SELECT COUNT(*) as total FROM services WHERE umkm_id = ?",
         [user.id]
       );
       const totalServices = totalServicesResult[0]?.total || 0;
-      
+
       setStats({
         totalBookings,
         pendingBookings,
         completedBookings,
         totalRevenue,
-        totalServices
+        totalServices,
       });
     } catch (error) {
-      console.log('Error loading stats:', error);
+      console.log("Error loading stats:", error);
     }
   };
 
@@ -111,7 +111,7 @@ const DashboardScreen = ({ navigation }) => {
       );
       setRecentBookings(bookingsData);
     } catch (error) {
-      console.log('Error loading recent bookings:', error);
+      console.log("Error loading recent bookings:", error);
     }
   };
 
@@ -123,21 +123,31 @@ const DashboardScreen = ({ navigation }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return '#ff9800';
-      case 'confirmed': return '#48bb78';
-      case 'completed': return '#48bb78';
-      case 'cancelled': return '#f44336';
-      default: return '#666';
+      case "pending":
+        return "#ff9800";
+      case "confirmed":
+        return "#48bb78";
+      case "completed":
+        return "#48bb78";
+      case "cancelled":
+        return "#f44336";
+      default:
+        return "#666";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'pending': return 'Menunggu';
-      case 'confirmed': return 'Dikonfirmasi';
-      case 'completed': return 'Selesai';
-      case 'cancelled': return 'Dibatalkan';
-      default: return status;
+      case "pending":
+        return "Menunggu";
+      case "confirmed":
+        return "Dikonfirmasi";
+      case "completed":
+        return "Selesai";
+      case "cancelled":
+        return "Dibatalkan";
+      default:
+        return status;
     }
   };
 
@@ -152,7 +162,7 @@ const DashboardScreen = ({ navigation }) => {
   );
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -161,15 +171,30 @@ const DashboardScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.greetingContainer}>
-            <Text style={styles.dashboardIcon}>●</Text>
+            <Icon
+              name="dashboard"
+              size={24}
+              color="white"
+              style={styles.dashboardIcon}
+            />
             <View>
               <Text style={styles.headerTitle}>Dashboard UMKM</Text>
               <Text style={styles.headerSubtitle}>Halo, {user?.name}!</Text>
             </View>
           </View>
           <View style={styles.decorativeElements}>
-            <Text style={styles.businessIcon}>■</Text>
-            <Text style={styles.successIcon}>▲</Text>
+            <Icon
+              name="business"
+              size={20}
+              color="white"
+              style={styles.businessIcon}
+            />
+            <Icon
+              name="trending-up"
+              size={18}
+              color="white"
+              style={styles.successIcon}
+            />
           </View>
         </View>
       </View>
@@ -181,28 +206,28 @@ const DashboardScreen = ({ navigation }) => {
           color="#48bb78"
           iconName="event"
         />
-        
+
         <StatCard
           title="Menunggu"
           value={stats.pendingBookings}
           color="#ff9800"
           iconName="schedule"
         />
-        
+
         <StatCard
           title="Selesai"
           value={stats.completedBookings}
           color="#48bb78"
           iconName="check-circle"
         />
-        
+
         <StatCard
           title="Total Pendapatan"
           value={`Rp ${stats.totalRevenue.toLocaleString()}`}
           color="#9c27b0"
           iconName="attach-money"
         />
-        
+
         <StatCard
           title="Total Layanan"
           value={stats.totalServices}
@@ -213,21 +238,31 @@ const DashboardScreen = ({ navigation }) => {
 
       <View style={styles.quickActions}>
         <Text style={styles.sectionTitle}>Aksi Cepat</Text>
-        
+
         <View style={styles.actionsGrid}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate('ManageBookings')}
+            onPress={() => navigation.navigate("ManageBookings")}
           >
-            <Icon name="event" size={24} color="#48bb78" style={styles.actionIcon} />
+            <Icon
+              name="event"
+              size={24}
+              color="#48bb78"
+              style={styles.actionIcon}
+            />
             <Text style={styles.actionText}>Kelola Booking</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => navigation.navigate('ManageServices')}
+            onPress={() => navigation.navigate("ManageServices")}
           >
-            <Icon name="build" size={24} color="#48bb78" style={styles.actionIcon} />
+            <Icon
+              name="build"
+              size={24}
+              color="#48bb78"
+              style={styles.actionIcon}
+            />
             <Text style={styles.actionText}>Kelola Layanan</Text>
           </TouchableOpacity>
         </View>
@@ -236,27 +271,44 @@ const DashboardScreen = ({ navigation }) => {
       <View style={styles.recentBookings}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Booking Terbaru</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('ManageBookings')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ManageBookings")}
+          >
             <Text style={styles.seeAllText}>Lihat Semua</Text>
           </TouchableOpacity>
         </View>
-        
+
         {recentBookings.length > 0 ? (
           recentBookings.map((booking) => (
             <View key={booking.id} style={styles.bookingCard}>
               <View style={styles.bookingHeader}>
-                <Text style={styles.bookingService}>{booking.service_name}</Text>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(booking.status) }]}>
-                  <Text style={styles.statusText}>{getStatusText(booking.status)}</Text>
+                <Text style={styles.bookingService}>
+                  {booking.service_name}
+                </Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    { backgroundColor: getStatusColor(booking.status) },
+                  ]}
+                >
+                  <Text style={styles.statusText}>
+                    {getStatusText(booking.status)}
+                  </Text>
                 </View>
               </View>
-              
-              <Text style={styles.bookingCustomer}>Customer: {booking.customer_name}</Text>
+
+              <Text style={styles.bookingCustomer}>
+                Customer: {booking.customer_name}
+              </Text>
               <View style={styles.dateRow}>
                 <Icon name="event" size={16} color="#48bb78" />
-                <Text style={styles.dateText}>{new Date(booking.booking_date).toLocaleDateString('id-ID')}</Text>
+                <Text style={styles.dateText}>
+                  {new Date(booking.booking_date).toLocaleDateString("id-ID")}
+                </Text>
               </View>
-              <Text style={styles.bookingPrice}>Rp {booking.total_price.toLocaleString()}</Text>
+              <Text style={styles.bookingPrice}>
+                Rp {booking.total_price.toLocaleString()}
+              </Text>
             </View>
           ))
         ) : (
@@ -272,54 +324,50 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fcff',
+    backgroundColor: "#f8fcff",
   },
   header: {
-    backgroundColor: '#48bb78',
+    backgroundColor: "#48bb78",
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 30,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     elevation: 8,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   greetingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   dashboardIcon: {
-    fontSize: 24,
     marginRight: 12,
   },
   decorativeElements: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   businessIcon: {
-    fontSize: 20,
     marginRight: 8,
   },
-  successIcon: {
-    fontSize: 18,
-  },
+  successIcon: {},
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   headerSubtitle: {
     fontSize: 14,
-    color: 'white',
+    color: "white",
     opacity: 0.9,
     marginTop: 5,
   },
@@ -328,19 +376,19 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   statCard: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 24,
     borderRadius: 25,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderLeftWidth: 6,
     elevation: 8,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     borderWidth: 1,
-    borderColor: '#f0f8f0',
+    borderColor: "#f0f8f0",
   },
   statIcon: {
     fontSize: 28,
@@ -351,14 +399,14 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#2d3748',
+    fontWeight: "bold",
+    color: "#2d3748",
   },
   statTitle: {
     fontSize: 14,
-    color: '#718096',
+    color: "#718096",
     marginTop: 4,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   quickActions: {
     paddingHorizontal: 20,
@@ -366,27 +414,27 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2d3748',
+    fontWeight: "bold",
+    color: "#2d3748",
     marginBottom: 15,
   },
   actionsGrid: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 15,
   },
   actionButton: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 28,
     borderRadius: 25,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 8,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     borderWidth: 1,
-    borderColor: '#e8f5e8',
+    borderColor: "#e8f5e8",
   },
   actionIcon: {
     fontSize: 36,
@@ -394,48 +442,48 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#2d3748',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#2d3748",
+    textAlign: "center",
   },
   recentBookings: {
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
   seeAllText: {
     fontSize: 14,
-    color: '#48bb78',
-    fontWeight: '600',
+    color: "#48bb78",
+    fontWeight: "600",
   },
   bookingCard: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 24,
     borderRadius: 25,
     marginBottom: 15,
     elevation: 6,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     borderWidth: 1,
-    borderColor: '#f0f8f0',
+    borderColor: "#f0f8f0",
   },
   bookingHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
   bookingService: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2d3748',
+    fontWeight: "bold",
+    color: "#2d3748",
     flex: 1,
   },
   statusBadge: {
@@ -444,48 +492,48 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   statusText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   bookingCustomer: {
     fontSize: 14,
-    color: '#718096',
+    color: "#718096",
     marginBottom: 5,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   dateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     marginBottom: 4,
   },
   dateText: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
   },
   bookingDate: {
     fontSize: 14,
-    color: '#718096',
+    color: "#718096",
     marginBottom: 5,
   },
   bookingPrice: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#48bb78',
+    fontWeight: "bold",
+    color: "#48bb78",
   },
   emptyState: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 30,
     borderRadius: 20,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#f0f0f0',
+    borderColor: "#f0f0f0",
   },
   emptyText: {
     fontSize: 16,
-    color: '#718096',
-    textAlign: 'center',
+    color: "#718096",
+    textAlign: "center",
   },
 });
 

@@ -15,12 +15,27 @@ import BookingFormScreen from "../screens/customer/BookingFormScreen";
 import BookingHistoryScreen from "../screens/customer/BookingHistoryScreen";
 import ReviewFormScreen from "../screens/customer/ReviewFormScreen";
 import ProfileScreen from "../screens/customer/ProfileScreen";
+import UmkmDetailScreen from "../screens/customer/UmkmDetailScreen";
+import FavoritesScreen from "../screens/customer/FavoritesScreen";
+import ChatScreen from "../screens/customer/ChatScreen";
+import ChatDetailScreen from "../screens/customer/ChatDetailScreen";
+import AdvancedSearchScreen from "../screens/customer/AdvancedSearchScreen";
+import NotificationsScreen from "../screens/customer/NotificationsScreen";
 
 // UMKM Screens
 import DashboardScreen from "../screens/umkm/DashboardScreen";
 import ManageBookingsScreen from "../screens/umkm/ManageBookingsScreen";
 import ManageServicesScreen from "../screens/umkm/ManageServicesScreen";
 import UMKMProfileScreen from "../screens/umkm/ProfileScreen";
+import AnalyticsScreen from "../screens/umkm/AnalyticsScreen";
+import PromotionsScreen from "../screens/umkm/PromotionsScreen";
+import ScheduleScreen from "../screens/umkm/ScheduleScreen";
+import TeamManagementScreen from "../screens/umkm/TeamManagementScreen";
+
+// Common Screens
+import ReviewsScreen from "../screens/common/ReviewsScreen";
+import PaymentScreen from "../screens/common/PaymentScreen";
+import MapScreen from "../screens/common/MapScreen";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -71,6 +86,40 @@ const CustomerTabs = () => {
           tabBarIcon: ({ color, focused }) => (
             <Icon
               name="home"
+              size={focused ? 23 : 20}
+              color={color}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Favorites"
+        component={FavoritesScreen}
+        options={{
+          tabBarLabel: "Favorit",
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              name="favorite"
+              size={focused ? 23 : 20}
+              color={color}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              name="chat"
               size={focused ? 23 : 20}
               color={color}
               style={{
@@ -206,6 +255,23 @@ const UMKMTabs = () => {
         }}
       />
       <Tab.Screen
+        name="Analytics"
+        component={AnalyticsScreen}
+        options={{
+          tabBarLabel: "Analitik",
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              name="analytics"
+              size={focused ? 23 : 20}
+              color={color}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="UMKMProfile"
         component={UMKMProfileScreen}
         options={{
@@ -250,6 +316,13 @@ const AppNavigator = () => {
               <>
                 <Stack.Screen name="CustomerTabs" component={CustomerTabs} />
                 <Stack.Screen
+                  name="UmkmDetail"
+                  component={UmkmDetailScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
                   name="BookingForm"
                   component={BookingFormScreen}
                   options={{
@@ -279,10 +352,96 @@ const AppNavigator = () => {
                     },
                   }}
                 />
+                <Stack.Screen
+                  name="AdvancedSearch"
+                  component={AdvancedSearchScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Notifications"
+                  component={NotificationsScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Reviews"
+                  component={ReviewsScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Payment"
+                  component={PaymentScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Map"
+                  component={MapScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="ChatDetail"
+                  component={ChatDetailScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
               </>
             ) : (
               // UMKM Stack
-              <Stack.Screen name="UMKMTabs" component={UMKMTabs} />
+              <>
+                <Stack.Screen name="UMKMTabs" component={UMKMTabs} />
+                <Stack.Screen
+                  name="Promotions"
+                  component={PromotionsScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Schedule"
+                  component={ScheduleScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="TeamManagement"
+                  component={TeamManagementScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Reviews"
+                  component={ReviewsScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Payment"
+                  component={PaymentScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Map"
+                  component={MapScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+              </>
             )}
           </>
         )}

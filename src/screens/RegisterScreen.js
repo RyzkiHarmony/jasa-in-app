@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useAuth } from "../context/AuthContext";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -50,14 +51,18 @@ const RegisterScreen = ({ navigation }) => {
         <View style={styles.content}>
           <View style={styles.headerContainer}>
             <View style={styles.characterContainer}>
-              <Text style={styles.welcomeIcon}>👋</Text>
+              <Icon name="pan-tool" size={20} color="#fbbf24" />
               <View style={styles.character}>
-                <Text style={styles.characterFace}>🤗</Text>
+                <Icon
+                  name="sentiment-very-satisfied"
+                  size={25}
+                  color="#ffffff"
+                />
               </View>
               <View style={styles.sparkles}>
-                <Text style={styles.sparkle}>✨</Text>
-                <Text style={styles.sparkle}>✨</Text>
-                <Text style={styles.sparkle}>✨</Text>
+                <Icon name="star" size={16} color="#fbbf24" />
+                <Icon name="star" size={16} color="#fbbf24" />
+                <Icon name="star" size={16} color="#fbbf24" />
               </View>
             </View>
           </View>
@@ -160,10 +165,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
   },
-  welcomeIcon: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
+
   character: {
     width: 70,
     height: 70,
@@ -173,17 +175,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-  characterFace: {
-    fontSize: 25,
-  },
+
   sparkles: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: 100,
   },
-  sparkle: {
-    fontSize: 16,
-  },
+
   title: {
     fontSize: 32,
     fontWeight: "bold",

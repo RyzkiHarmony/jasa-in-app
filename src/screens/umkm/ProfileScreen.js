@@ -76,7 +76,7 @@ const ProfileScreen = () => {
         <TouchableOpacity style={styles.menuItem} onPress={handleUpdateProfile}>
           <Icon name="edit" size={24} color="#48bb78" />
           <Text style={styles.menuText}>Edit Profil</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#718096" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -85,7 +85,7 @@ const ProfileScreen = () => {
         >
           <Icon name="lock" size={24} color="#48bb78" />
           <Text style={styles.menuText}>Ganti Password</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#718096" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -94,7 +94,7 @@ const ProfileScreen = () => {
         >
           <Icon name="business" size={24} color="#48bb78" />
           <Text style={styles.menuText}>Pengaturan Bisnis</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#718096" />
         </TouchableOpacity>
       </View>
 
@@ -109,7 +109,7 @@ const ProfileScreen = () => {
         >
           <Icon name="help" size={24} color="#48bb78" />
           <Text style={styles.menuText}>Bantuan</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#718096" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -120,7 +120,7 @@ const ProfileScreen = () => {
         >
           <Icon name="info" size={24} color="#48bb78" />
           <Text style={styles.menuText}>Tentang Aplikasi</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#718096" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -129,7 +129,7 @@ const ProfileScreen = () => {
         >
           <Icon name="logout" size={24} color="#e53e3e" />
           <Text style={styles.logoutText}>Logout</Text>
-          <Text style={styles.menuArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#e53e3e" />
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -277,10 +277,7 @@ const styles = StyleSheet.create({
     color: "#2d3748",
     fontWeight: "500",
   },
-  menuArrow: {
-    fontSize: 20,
-    color: "#718096",
-  },
+
   logoutItem: {
     borderColor: "#fed7d7",
     backgroundColor: "#fff5f5",

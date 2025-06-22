@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,59 +7,56 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
-  ScrollView
-} from 'react-native';
-import getDatabase from '../../database/database';
-import { useAuth } from '../../context/AuthContext';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+  ScrollView,
+} from "react-native";
+import getDatabase from "../../database/database";
+import { useAuth } from "../../context/AuthContext";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const ProfileScreen = () => {
   const { user, logout } = useAuth();
-  const [name, setName] = useState(user?.name || '');
-  const [phone, setPhone] = useState(user?.phone || '');
+  const [name, setName] = useState(user?.name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
 
   const handleUpdateProfile = () => {
     if (!name.trim() || !phone.trim()) {
-      Alert.alert('Error', 'Mohon isi semua field');
+      Alert.alert("Error", "Mohon isi semua field");
       return;
     }
 
     setLoading(true);
-    
+
     try {
       const db = getDatabase();
-      db.runSync(
-        'UPDATE users SET name = ?, phone = ? WHERE id = ?',
-        [name.trim(), phone.trim(), user.id]
-      );
-      
+      db.runSync("UPDATE users SET name = ?, phone = ? WHERE id = ?", [
+        name.trim(),
+        phone.trim(),
+        user.id,
+      ]);
+
       setLoading(false);
       setEditing(false);
-      Alert.alert('Sukses', 'Profil berhasil diperbarui');
+      Alert.alert("Sukses", "Profil berhasil diperbarui");
       // Update user context would require additional implementation
     } catch (error) {
       setLoading(false);
-      console.log('Profile update error:', error);
-      Alert.alert('Error', 'Gagal memperbarui profil');
+      console.log("Profile update error:", error);
+      Alert.alert("Error", "Gagal memperbarui profil");
     }
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Apakah Anda yakin ingin keluar?',
-      [
-        { text: 'Batal', style: 'cancel' },
-        { text: 'Ya', onPress: logout }
-      ]
-    );
+    Alert.alert("Logout", "Apakah Anda yakin ingin keluar?", [
+      { text: "Batal", style: "cancel" },
+      { text: "Ya", onPress: logout },
+    ]);
   };
 
   const cancelEdit = () => {
-    setName(user?.name || '');
-    setPhone(user?.phone || '');
+    setName(user?.name || "");
+    setPhone(user?.phone || "");
     setEditing(false);
   };
 
@@ -71,12 +68,14 @@ const ProfileScreen = () => {
             <Icon name="person" size={30} color="#48bb78" />
             <View>
               <Text style={styles.headerTitle}>Profil Saya</Text>
-              <Text style={styles.headerSubtitle}>Kelola informasi akun Anda</Text>
+              <Text style={styles.headerSubtitle}>
+                Kelola informasi akun Anda
+              </Text>
             </View>
           </View>
           <View style={styles.decorativeElements}>
             <Icon name="settings" size={24} color="#48bb78" />
-              <Icon name="edit" size={24} color="#48bb78" />
+            <Icon name="edit" size={24} color="#48bb78" />
           </View>
         </View>
       </View>
@@ -85,7 +84,7 @@ const ProfileScreen = () => {
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+              {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </Text>
           </View>
         </View>
@@ -106,7 +105,7 @@ const ProfileScreen = () => {
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={[styles.input, styles.inputDisabled]}
-              value={user?.email || ''}
+              value={user?.email || ""}
               editable={false}
               placeholder="Email"
             />
@@ -129,22 +128,22 @@ const ProfileScreen = () => {
             <Text style={styles.label}>Role</Text>
             <TextInput
               style={[styles.input, styles.inputDisabled]}
-              value={user?.role === 'customer' ? 'Customer' : 'UMKM'}
+              value={user?.role === "customer" ? "Customer" : "UMKM"}
               editable={false}
             />
           </View>
 
           {editing ? (
             <View style={styles.buttonGroup}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.button, styles.cancelButton]}
                 onPress={cancelEdit}
                 disabled={loading}
               >
                 <Text style={styles.cancelButtonText}>Batal</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={[styles.button, styles.saveButton]}
                 onPress={handleUpdateProfile}
                 disabled={loading}
@@ -157,7 +156,7 @@ const ProfileScreen = () => {
               </TouchableOpacity>
             </View>
           ) : (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.button, styles.editButton]}
               onPress={() => setEditing(true)}
             >
@@ -169,18 +168,24 @@ const ProfileScreen = () => {
 
       <View style={styles.actionsCard}>
         <Text style={styles.actionsTitle}>Aksi</Text>
-        
-        <TouchableOpacity style={styles.actionItem}>
+
+        <TouchableOpacity
+          style={styles.actionItem}
+          onPress={() => console.log("Bantuan & FAQ pressed")}
+        >
           <Text style={styles.actionText}>Bantuan & FAQ</Text>
-          <Text style={styles.actionArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#666" />
         </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.actionItem}>
+
+        <TouchableOpacity
+          style={styles.actionItem}
+          onPress={() => console.log("Tentang Aplikasi pressed")}
+        >
           <Text style={styles.actionText}>Tentang Aplikasi</Text>
-          <Text style={styles.actionArrow}>›</Text>
+          <Icon name="chevron-right" size={24} color="#666" />
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={[styles.actionItem, styles.logoutItem]}
           onPress={handleLogout}
         >
@@ -199,29 +204,29 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fcff',
+    backgroundColor: "#f8fcff",
   },
   header: {
-    backgroundColor: '#48bb78',
+    backgroundColor: "#48bb78",
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 30,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     elevation: 8,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   greetingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   profileIcon: {
@@ -229,8 +234,8 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   decorativeElements: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   settingsIcon: {
     fontSize: 24,
@@ -241,49 +246,49 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   headerSubtitle: {
     fontSize: 14,
-    color: 'white',
+    color: "white",
     opacity: 0.9,
     marginTop: 2,
   },
   profileCard: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     margin: 20,
     borderRadius: 25,
     padding: 28,
     elevation: 8,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     borderWidth: 1,
-    borderColor: '#c6f6d5',
+    borderColor: "#c6f6d5",
   },
   avatarContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   avatar: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#48bb78',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#48bb78",
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 6,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
   },
   avatarText: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   form: {
     gap: 15,
@@ -293,37 +298,37 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#48bb78',
+    color: "#48bb78",
     marginBottom: 5,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   input: {
-    backgroundColor: '#f8fcff',
+    backgroundColor: "#f8fcff",
     paddingHorizontal: 18,
     paddingVertical: 15,
     borderRadius: 15,
     fontSize: 16,
     borderWidth: 2,
-    borderColor: '#c6f6d5',
-    color: '#2d3748',
+    borderColor: "#c6f6d5",
+    color: "#2d3748",
     elevation: 2,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   inputDisabled: {
-    backgroundColor: '#f0f0f0',
-    color: '#666',
+    backgroundColor: "#f0f0f0",
+    color: "#666",
   },
   helperText: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginTop: 5,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   buttonGroup: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
     marginTop: 10,
   },
@@ -331,89 +336,86 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   editButton: {
-    backgroundColor: '#48bb78',
+    backgroundColor: "#48bb78",
     marginTop: 10,
     elevation: 2,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
   },
   editButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   saveButton: {
-    backgroundColor: '#48bb78',
+    backgroundColor: "#48bb78",
   },
   saveButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   cancelButton: {
-    backgroundColor: '#f44336',
+    backgroundColor: "#f44336",
   },
   cancelButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   actionsCard: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginHorizontal: 20,
     marginBottom: 20,
     borderRadius: 25,
     padding: 24,
     elevation: 6,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
     borderWidth: 1,
-    borderColor: '#E8F5E8',
+    borderColor: "#E8F5E8",
   },
   actionsTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#48bb78',
+    fontWeight: "bold",
+    color: "#48bb78",
     marginBottom: 15,
   },
   actionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#f0f0f0",
   },
   actionText: {
     fontSize: 16,
-    color: '#2E7D32',
+    color: "#2E7D32",
   },
-  actionArrow: {
-    fontSize: 20,
-    color: '#666',
-  },
+
   logoutItem: {
     borderBottomWidth: 0,
   },
   logoutText: {
     fontSize: 16,
-    color: '#f44336',
-    fontWeight: '500',
+    color: "#f44336",
+    fontWeight: "500",
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   footerText: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
   },
 });
 

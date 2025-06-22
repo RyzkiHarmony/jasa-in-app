@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,123 +7,180 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  RefreshControl
-} from 'react-native';
-import getDatabase from '../../database/database';
-import { useAuth } from '../../context/AuthContext';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+  RefreshControl,
+  Image,
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import getDatabase from "../../database/database";
+import { useAuth } from "../../context/AuthContext";
 
 const HomeScreen = ({ navigation }) => {
-  const [services, setServices] = useState([]);
-  const [filteredServices, setFilteredServices] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [umkms, setUmkms] = useState([]);
+  const [filteredUmkms, setFilteredUmkms] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const { user } = useAuth();
 
-  const categories = ['All', 'Laundry', 'Servis AC', 'Pangkas Rambut', 'Les Privat'];
+  const categories = [
+    { name: "All", icon: "apps", label: "Semua" },
+    { name: "Laundry", icon: "local-laundry-service", label: "Laundry" },
+    { name: "Servis", icon: "build", label: "Servis" },
+    { name: "Barbershop", icon: "content-cut", label: "Barbershop" },
+    { name: "Les Privat", icon: "school", label: "Les Privat" },
+    { name: "Fotografi", icon: "camera-alt", label: "Fotografi" },
+    { name: "Montir", icon: "motorcycle", label: "Montir" },
+  ];
 
   useEffect(() => {
-    loadServices();
+    loadUmkms();
   }, []);
 
   useEffect(() => {
-    filterServices();
-  }, [services, searchText, selectedCategory]);
+    filterUmkms();
+  }, [umkms, searchText, selectedCategory]);
 
-  const loadServices = () => {
+  const loadUmkms = () => {
     try {
       const db = getDatabase();
       const result = db.getAllSync(
-        `SELECT s.*, u.name as umkm_name 
-         FROM services s 
-         JOIN users u ON s.umkm_id = u.id 
+        `SELECT u.*, 
+               COUNT(s.id) as service_count,
+               AVG(s.rating) as avg_rating,
+               MIN(s.price) as min_price,
+               GROUP_CONCAT(DISTINCT s.category) as categories
+         FROM users u 
+         LEFT JOIN services s ON u.id = s.umkm_id 
          WHERE u.role = 'umkm'
-         ORDER BY s.rating DESC`
+         GROUP BY u.id
+         ORDER BY avg_rating DESC`
       );
-      setServices(result);
+      setUmkms(result);
     } catch (error) {
-      console.log('Error loading services:', error);
-      Alert.alert('Error', 'Gagal memuat data jasa');
+      console.log("Error loading UMKMs:", error);
+      Alert.alert("Error", "Gagal memuat data UMKM");
     }
   };
 
-  const filterServices = () => {
-    let filtered = services;
+  const filterUmkms = () => {
+    let filtered = umkms;
 
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(service => service.category === selectedCategory);
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter((umkm) => {
+        // Map category names to match service categories
+        const categoryMap = {
+          Laundry: "Laundry",
+          Servis: "Servis AC",
+          Barbershop: "Pangkas Rambut",
+          "Les Privat": "Les Privat",
+          Fotografi: "Fotografi",
+          Montir: "Montir",
+        };
+        const targetCategory =
+          categoryMap[selectedCategory] || selectedCategory;
+        return umkm.categories && umkm.categories.includes(targetCategory);
+      });
     }
 
     if (searchText) {
-      filtered = filtered.filter(service => 
-        service.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        service.umkm_name.toLowerCase().includes(searchText.toLowerCase())
+      filtered = filtered.filter(
+        (umkm) =>
+          umkm.name.toLowerCase().includes(searchText.toLowerCase()) ||
+          (umkm.categories &&
+            umkm.categories.toLowerCase().includes(searchText.toLowerCase()))
       );
     }
 
-    setFilteredServices(filtered);
+    setFilteredUmkms(filtered);
   };
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadServices();
+    loadUmkms();
     setRefreshing(false);
   };
 
-  const handleBookService = (service) => {
-    navigation.navigate('BookingForm', { service });
+  const handleViewUmkm = (umkm) => {
+    navigation.navigate("UmkmDetail", { umkm });
   };
 
-  const renderService = ({ item }) => (
-    <TouchableOpacity 
+  const renderUmkm = ({ item }) => (
+    <TouchableOpacity
       style={styles.serviceCard}
-      onPress={() => handleBookService(item)}
+      onPress={() => handleViewUmkm(item)}
     >
-      <View style={styles.serviceHeader}>
+      <View style={styles.serviceImageContainer}>
+        <Image
+          source={{ uri: item.image || "https://via.placeholder.com/80" }}
+          style={styles.serviceImage}
+        />
+      </View>
+
+      <View style={styles.serviceInfo}>
         <Text style={styles.serviceName}>{item.name}</Text>
-        <Text style={styles.servicePrice}>Rp {item.price.toLocaleString()}</Text>
-      </View>
-      
-      <Text style={styles.umkmName}>{item.umkm_name}</Text>
-      <Text style={styles.serviceDescription}>{item.description}</Text>
-      
-      <View style={styles.serviceFooter}>
-        <Text style={styles.category}>{item.category}</Text>
         <View style={styles.ratingContainer}>
-          <View style={styles.ratingRow}>
-            <Icon name="star" size={16} color="#ff9800" />
-            <Text style={styles.rating}>{item.rating.toFixed(1)}</Text>
-          </View>
+          <Icon name="star" size={16} color="#fbbf24" />
+          <Text style={styles.ratingText}>
+            {item.avg_rating ? item.avg_rating.toFixed(1) : "0.0"} (
+            {item.service_count || 0} jasa)
+          </Text>
         </View>
+        <View style={styles.locationContainer}>
+          <Icon name="location-on" size={14} color="#6b7280" />
+          <Text style={styles.locationText}>{item.distance || "2.5"} km</Text>
+        </View>
+        <Text style={styles.servicePrice}>
+          Mulai Rp {item.min_price ? item.min_price.toLocaleString() : "0"}
+        </Text>
+        {item.categories && (
+          <Text style={styles.category}>{item.categories.split(",")[0]}</Text>
+        )}
       </View>
+
+      <TouchableOpacity
+        style={styles.bookButton}
+        onPress={() => handleViewUmkm(item)}
+      >
+        <Text style={styles.bookButtonText}>Lihat</Text>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
-  const renderCategoryFilter = () => (
+  const renderCategoryGrid = () => (
     <View style={styles.categoryContainer}>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={categories}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
+      <Text style={styles.categoryTitle}>Kategori Populer</Text>
+      <View style={styles.categoryGrid}>
+        {categories.slice(1).map((category, index) => (
           <TouchableOpacity
+            key={category.name}
             style={[
-              styles.categoryButton,
-              selectedCategory === item && styles.categoryButtonActive
+              styles.categoryGridItem,
+              selectedCategory === category.name &&
+                styles.categoryGridItemActive,
             ]}
-            onPress={() => setSelectedCategory(item)}
+            onPress={() => setSelectedCategory(category.name)}
           >
-            <Text style={[
-              styles.categoryText,
-              selectedCategory === item && styles.categoryTextActive
-            ]}>
-              {item}
+            <View style={styles.categoryIconContainer}>
+              <Icon
+                name={category.icon}
+                size={32}
+                color={
+                  selectedCategory === category.name ? "#48bb78" : "#6b7280"
+                }
+              />
+            </View>
+            <Text
+              style={[
+                styles.categoryGridText,
+                selectedCategory === category.name &&
+                  styles.categoryGridTextActive,
+              ]}
+            >
+              {category.label}
             </Text>
           </TouchableOpacity>
-        )}
-      />
+        ))}
+      </View>
     </View>
   );
 
@@ -132,10 +189,12 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.greetingContainer}>
-            <Text style={styles.waveEmoji}>👋</Text>
+            <Icon name="pan-tool" size={24} color="#fbbf24" />
             <View>
               <Text style={styles.headerTitle}>Halo, {user?.name}!</Text>
-              <Text style={styles.headerSubtitle}>Cari jasa yang Anda butuhkan</Text>
+              <Text style={styles.headerSubtitle}>
+                Temukan UMKM terpercaya di sekitar Anda
+              </Text>
             </View>
           </View>
           <View style={styles.decorativeElements}>
@@ -147,27 +206,36 @@ const HomeScreen = ({ navigation }) => {
 
       <TextInput
         style={styles.searchInput}
-        placeholder="Cari jasa atau UMKM..."
+        placeholder="Cari UMKM atau kategori jasa..."
         value={searchText}
         onChangeText={setSearchText}
       />
 
-      {renderCategoryFilter()}
+      {renderCategoryGrid()}
 
-      <FlatList
-        data={filteredServices}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderService}
-        contentContainerStyle={styles.servicesList}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Tidak ada jasa ditemukan</Text>
-          </View>
-        }
-      />
+      <View style={styles.servicesSection}>
+        <View style={styles.servicesSectionHeader}>
+          <Text style={styles.servicesSectionTitle}>UMKM Terdekat</Text>
+          <TouchableOpacity onPress={() => console.log("Lihat Semua pressed")}>
+            <Text style={styles.seeAllText}>Lihat Semua</Text>
+          </TouchableOpacity>
+        </View>
+
+        <FlatList
+          data={filteredUmkms}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderUmkm}
+          contentContainerStyle={styles.servicesList}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>Tidak ada UMKM ditemukan</Text>
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -175,10 +243,10 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
+    backgroundColor: "#f0f8ff",
   },
   header: {
-    backgroundColor: '#48bb78',
+    backgroundColor: "#48bb78",
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 25,
@@ -186,22 +254,19 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 25,
   },
   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   greetingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
-  waveEmoji: {
-    fontSize: 24,
-    marginRight: 12,
-  },
+
   decorativeElements: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   serviceIcon: {
     fontSize: 20,
@@ -212,17 +277,17 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   headerSubtitle: {
     fontSize: 14,
-    color: 'white',
+    color: "white",
     opacity: 0.9,
     marginTop: 5,
   },
   searchInput: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginHorizontal: 20,
     marginTop: -20,
     marginBottom: 25,
@@ -231,137 +296,175 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     fontSize: 16,
     elevation: 6,
-    shadowColor: '#48bb78',
+    shadowColor: "#48bb78",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     borderWidth: 1,
-    borderColor: '#e8f5e8',
+    borderColor: "#e8f5e8",
   },
   categoryContainer: {
     paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  categoryTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#2d3748",
     marginBottom: 15,
   },
-  categoryButton: {
-    backgroundColor: 'white',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
-    marginRight: 12,
-    elevation: 4,
-    shadowColor: '#48bb78',
+  categoryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  categoryGridItem: {
+    width: "30%",
+    backgroundColor: "white",
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    alignItems: "center",
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     borderWidth: 1,
-    borderColor: '#e8f5e8',
+    borderColor: "#f0f0f0",
   },
-  categoryButtonActive: {
-    backgroundColor: '#48bb78',
-    elevation: 6,
-    shadowOpacity: 0.25,
-    transform: [{ scale: 1.05 }],
+  categoryGridItemActive: {
+    borderColor: "#48bb78",
+    borderWidth: 2,
   },
-  categoryText: {
-    fontSize: 14,
-    color: '#718096',
-    fontWeight: '600',
+  categoryIconContainer: {
+    marginBottom: 8,
   },
-  categoryTextActive: {
-    color: 'white',
-    fontWeight: 'bold',
+  categoryGridText: {
+    fontSize: 12,
+    color: "#6b7280",
+    fontWeight: "500",
+    textAlign: "center",
   },
-  servicesList: {
+  categoryGridTextActive: {
+    color: "#48bb78",
+    fontWeight: "bold",
+  },
+  servicesSection: {
+    flex: 1,
     paddingHorizontal: 20,
   },
-  serviceCard: {
-    backgroundColor: 'white',
-    marginHorizontal: 20,
-    marginBottom: 18,
-    borderRadius: 20,
-    padding: 24,
-    elevation: 6,
-    shadowColor: '#48bb78',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: '#f0f8f0',
+  servicesSectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
   },
-  serviceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+  servicesSectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#2d3748",
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: "#48bb78",
+    fontWeight: "600",
+  },
+  servicesList: {
+    paddingBottom: 20,
+  },
+  serviceCard: {
+    backgroundColor: "white",
+    marginBottom: 15,
+    borderRadius: 15,
+    padding: 15,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  serviceImageContainer: {
+    marginRight: 15,
+  },
+  serviceImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    backgroundColor: "#f3f4f6",
+  },
+  serviceInfo: {
+    flex: 1,
+    marginRight: 10,
   },
   serviceName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2d3748',
-    flex: 1,
-    letterSpacing: 0.5,
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#2d3748",
+    marginBottom: 4,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginLeft: 4,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  locationText: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginLeft: 2,
   },
   servicePrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#48bb78',
-  },
-  umkmName: {
-    fontSize: 15,
-    color: '#718096',
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  serviceDescription: {
     fontSize: 14,
-    color: '#718096',
-    marginBottom: 12,
-    lineHeight: 20,
+    fontWeight: "bold",
+    color: "#48bb78",
   },
-  serviceFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  bookButton: {
+    backgroundColor: "#48bb78",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  bookButtonText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   category: {
     fontSize: 12,
-    color: '#48bb78',
-    backgroundColor: '#f0fff4',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    fontWeight: '600',
-    borderWidth: 1,
-    borderColor: '#c6f6d5',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff5f5',
+    color: "#48bb78",
+    backgroundColor: "#c6f6d5",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  rating: {
-    fontSize: 14,
-    color: '#ff9800',
-    fontWeight: '600',
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#c6f6d5",
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 50,
   },
   emptyText: {
     fontSize: 16,
-    color: '#718096',
-    textAlign: 'center',
+    color: "#718096",
+    textAlign: "center",
   },
 });
 

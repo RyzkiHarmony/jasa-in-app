@@ -73,7 +73,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('BookingHistory')
+            onPress: () => navigation.goBack()
           }
         ]
       );

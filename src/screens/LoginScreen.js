@@ -43,17 +43,21 @@ const LoginScreen = ({ navigation }) => {
             <Icon name="wb-sunny" size={40} color="#ff9800" />
           </View>
           <View style={styles.characterContainer}>
-            <Text style={styles.musicNotes}>♪ ♫ ♪</Text>
+            <View style={styles.musicNotes}>
+              <Icon name="music-note" size={16} color="#68d391" />
+              <Icon name="music-note" size={18} color="#68d391" />
+              <Icon name="music-note" size={16} color="#68d391" />
+            </View>
             <View style={styles.character}>
-              <Text style={styles.characterFace}>😊</Text>
+              <Icon name="face" size={30} color="#fbbf24" />
               <View style={styles.headphones}>
-                <Text style={styles.headphoneIcon}>🎧</Text>
+                <Icon name="headset" size={35} color="#48bb78" />
               </View>
             </View>
             <View style={styles.flowers}>
-              <Text style={styles.flower}>🌱</Text>
-              <Text style={styles.flower}>🌱</Text>
-              <Text style={styles.flower}>🌱</Text>
+              <Icon name="eco" size={20} color="#68d391" />
+              <Icon name="eco" size={20} color="#68d391" />
+              <Icon name="eco" size={20} color="#68d391" />
             </View>
           </View>
         </View>
@@ -138,10 +142,11 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   musicNotes: {
-    fontSize: 16,
-    color: "#68d391",
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
     transform: [{ rotate: "-15deg" }],
+    gap: 4,
   },
   character: {
     width: 80,
@@ -153,25 +158,18 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     position: "relative",
   },
-  characterFace: {
-    fontSize: 30,
-  },
+
   headphones: {
     position: "absolute",
     top: -10,
   },
-  headphoneIcon: {
-    fontSize: 35,
-    color: "#48bb78",
-  },
+
   flowers: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: 120,
   },
-  flower: {
-    fontSize: 20,
-  },
+
   title: {
     fontSize: 36,
     fontWeight: "bold",
