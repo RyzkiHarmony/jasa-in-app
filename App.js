@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { Alert } from "react-native";
+import { AuthProvider } from "./src/context/AuthContext";
+import AppNavigator from "./src/components/Navigation";
+import { initializeDatabase } from "./src/database/database";
 
 export default function App() {
+  useEffect(() => {
+    const setupDatabase = async () => {
+      try {
+        await initializeDatabase();
+        console.log("Database initialized successfully");
+      } catch (error) {
+        console.error("Database initialization failed:", error);
+        Alert.alert("Error", "Gagal menginisialisasi database");
+      }
+    };
+
+    setupDatabase();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <AuthProvider>
+      <AppNavigator />
       <StatusBar style="auto" />
-    </View>
+    </AuthProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
