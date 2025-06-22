@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatPrice } from "../../utils/dateUtils";
 
 const FavoritesScreen = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
@@ -137,7 +138,7 @@ const FavoritesScreen = ({ navigation }) => {
             </Text>
           </View>
           <Text style={styles.favoritePrice}>
-            Mulai Rp {item.min_price ? item.min_price.toLocaleString() : "0"}
+            Mulai {formatPrice(item.min_price || 0)}
           </Text>
           {item.categories && (
             <Text style={styles.category}>{item.categories.split(",")[0]}</Text>

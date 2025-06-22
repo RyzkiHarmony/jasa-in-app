@@ -11,6 +11,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatRelativeTimeJakarta } from "../../utils/dateUtils";
 
 const ChatScreen = ({ navigation }) => {
   const { user } = useAuth();
@@ -54,21 +55,7 @@ const ChatScreen = ({ navigation }) => {
   };
 
   const formatTime = (timestamp) => {
-    if (!timestamp) return "";
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) {
-      return "Hari ini";
-    } else if (diffDays === 2) {
-      return "Kemarin";
-    } else if (diffDays <= 7) {
-      return `${diffDays - 1} hari lalu`;
-    } else {
-      return date.toLocaleDateString("id-ID");
-    }
+    return formatRelativeTimeJakarta(timestamp);
   };
 
   const renderChatItem = ({ item }) => (

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatDateJakarta } from "../../utils/dateUtils";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const ReviewFormScreen = ({ route, navigation }) => {
@@ -131,7 +132,7 @@ const ReviewFormScreen = ({ route, navigation }) => {
         <Text style={styles.serviceName}>{booking.service_name}</Text>
         <Text style={styles.umkmName}>{booking.umkm_name}</Text>
         <Text style={styles.bookingDate}>
-          {new Date(booking.booking_date).toLocaleDateString("id-ID", {
+          {formatDateJakarta(booking.booking_date, {
             weekday: "long",
             year: "numeric",
             month: "long",

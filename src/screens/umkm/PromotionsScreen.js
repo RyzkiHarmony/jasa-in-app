@@ -14,6 +14,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { getCurrentJakartaTime, formatDateJakarta, formatPrice, toDBFormat } from "../../utils/dateUtils";
 
 const PromotionsScreen = ({ navigation }) => {
   const [promotions, setPromotions] = useState([]);
@@ -118,7 +119,7 @@ const PromotionsScreen = ({ navigation }) => {
 
     try {
       const db = getDatabase();
-      const now = new Date().toISOString();
+      const now = toDBFormat(getCurrentJakartaTime());
 
       if (editingPromotion) {
         // Update existing promotion
@@ -232,13 +233,13 @@ const PromotionsScreen = ({ navigation }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "Tidak terbatas";
-    return new Date(dateString).toLocaleDateString("id-ID");
+    return formatDateJakarta(dateString);
   };
 
   const getPromotionStatus = (promotion) => {
     if (!promotion.is_active) return { text: "Nonaktif", color: "#a0aec0" };
     
-    const now = new Date();
+    const now = getCurrentJakartaTime();
     const startDate = promotion.start_date ? new Date(promotion.start_date) : null;
     const endDate = promotion.end_date ? new Date(promotion.end_date) : null;
     
@@ -303,7 +304,7 @@ const PromotionsScreen = ({ navigation }) => {
             <Text style={styles.detailText}>
               {item.discount_percentage 
                 ? `${item.discount_percentage}% off`
-                : `Rp ${item.discount_amount?.toLocaleString()} off`
+                : `${formatPrice(item.discount_amount)} off`
               }
             </Text>
           </View>
@@ -312,7 +313,7 @@ const PromotionsScreen = ({ navigation }) => {
             <View style={styles.detailRow}>
               <Icon name="shopping-cart" size={16} color="#6b7280" />
               <Text style={styles.detailText}>
-                Min. pembelian Rp {item.min_purchase.toLocaleString()}
+                Min. pembelian {formatPrice(item.min_purchase)}
               </Text>
             </View>
           )}

@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatRelativeTimeJakarta } from "../../utils/dateUtils";
 
 const ChatScreen = ({ navigation }) => {
   const [chats, setChats] = useState([]);
@@ -62,22 +63,7 @@ const ChatScreen = ({ navigation }) => {
   };
 
   const formatTime = (timestamp) => {
-    if (!timestamp) return "";
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInHours = (now - date) / (1000 * 60 * 60);
-    
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString('id-ID', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
-    } else {
-      return date.toLocaleDateString('id-ID', { 
-        day: '2-digit', 
-        month: '2-digit' 
-      });
-    }
+    return formatRelativeTimeJakarta(timestamp);
   };
 
   const renderChat = ({ item }) => (

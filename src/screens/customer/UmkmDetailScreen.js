@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatPrice } from "../../utils/dateUtils";
 
 const UmkmDetailScreen = ({ route, navigation }) => {
   const { umkm } = route.params;
@@ -161,7 +162,7 @@ const UmkmDetailScreen = ({ route, navigation }) => {
           <Text style={styles.ratingText}>{item.rating} (Rating)</Text>
         </View>
         <Text style={styles.servicePrice}>
-          Rp {item.price.toLocaleString()}
+          {formatPrice(item.price)}
         </Text>
         <Text style={styles.category}>{item.category}</Text>
       </View>

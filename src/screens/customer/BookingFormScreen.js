@@ -13,11 +13,21 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import getDatabase from '../../database/database';
 import { useAuth } from '../../context/AuthContext';
+import {
+  getCurrentJakartaTime,
+  formatDateJakarta,
+  formatTimeJakarta,
+  formatDateTimeJakarta,
+  isValidBookingDate,
+  toDBFormat,
+  getMinimumDate,
+  formatPrice
+} from '../../utils/dateUtils';
 
 const BookingFormScreen = ({ route, navigation }) => {
   const { service } = route.params;
   const { user } = useAuth();
-  const [bookingDate, setBookingDate] = useState(new Date());
+  const [bookingDate, setBookingDate] = useState(getCurrentJakartaTime());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [notes, setNotes] = useState('');
@@ -41,14 +51,14 @@ const BookingFormScreen = ({ route, navigation }) => {
   };
 
   const handleBooking = () => {
-    if (bookingDate < new Date()) {
+    if (!isValidBookingDate(bookingDate)) {
       Alert.alert('Error', 'Tanggal booking tidak boleh di masa lalu');
       return;
     }
 
     Alert.alert(
       'Konfirmasi Booking',
-      `Apakah Anda yakin ingin booking ${service.name} pada ${bookingDate.toLocaleDateString('id-ID')} ${bookingDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}?`,
+      `Apakah Anda yakin ingin booking ${service.name} pada ${formatDateTimeJakarta(bookingDate)}?`,
       [
         { text: 'Batal', style: 'cancel' },
         { text: 'Ya', onPress: confirmBooking }
@@ -63,7 +73,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       const db = getDatabase();
       const result = db.runSync(
         'INSERT INTO bookings (customer_id, service_id, booking_date, status, total_price) VALUES (?, ?, ?, ?, ?)',
-        [user.id, service.id, bookingDate.toISOString(), 'pending', service.price]
+        [user.id, service.id, toDBFormat(bookingDate), 'pending', service.price]
       );
       
       setLoading(false);
@@ -85,7 +95,7 @@ const BookingFormScreen = ({ route, navigation }) => {
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString('id-ID', {
+    return formatDateJakarta(date, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -94,7 +104,7 @@ const BookingFormScreen = ({ route, navigation }) => {
   };
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString('id-ID', {
+    return formatTimeJakarta(date, {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -105,7 +115,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       <View style={styles.serviceInfo}>
         <Text style={styles.serviceName}>{service.name}</Text>
         <Text style={styles.umkmName}>{service.umkm_name}</Text>
-        <Text style={styles.servicePrice}>Rp {service.price.toLocaleString()}</Text>
+        <Text style={styles.servicePrice}>{formatPrice(service.price)}</Text>
         <Text style={styles.serviceDescription}>{service.description}</Text>
       </View>
 
@@ -159,7 +169,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Total Harga:</Text>
-            <Text style={styles.summaryPrice}>Rp {service.price.toLocaleString()}</Text>
+            <Text style={styles.summaryPrice}>{formatPrice(service.price)}</Text>
           </View>
         </View>
 
@@ -182,7 +192,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           mode="date"
           display="default"
           onChange={handleDateChange}
-          minimumDate={new Date()}
+          minimumDate={getMinimumDate()}
         />
       )}
 

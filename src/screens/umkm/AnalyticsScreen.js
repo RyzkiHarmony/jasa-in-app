@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { getCurrentJakartaTime, formatPrice } from "../../utils/dateUtils";
 
 const { width } = Dimensions.get("window");
 
@@ -53,7 +54,7 @@ const AnalyticsScreen = ({ navigation }) => {
       const db = getDatabase();
       
       // Get date range based on selected period
-      const now = new Date();
+      const now = getCurrentJakartaTime();
       let startDate;
       
       switch (selectedPeriod) {
@@ -234,7 +235,7 @@ const AnalyticsScreen = ({ navigation }) => {
         </View>
       </View>
       <Text style={styles.servicePrice}>
-        Rp {service.price ? service.price.toLocaleString() : '0'}
+        {formatPrice(service.price || 0)}
       </Text>
     </View>
   );
@@ -297,13 +298,13 @@ const AnalyticsScreen = ({ navigation }) => {
           <View style={styles.statsGrid}>
             <StatCard
               title="Total Pendapatan"
-              value={`Rp ${analytics.totalRevenue.toLocaleString()}`}
+              value={formatPrice(analytics.totalRevenue)}
               color="#48bb78"
               iconName="attach-money"
             />
             <StatCard
               title="Pendapatan Periode"
-              value={`Rp ${analytics.monthlyRevenue.toLocaleString()}`}
+              value={formatPrice(analytics.monthlyRevenue)}
               color="#4299e1"
               iconName="trending-up"
             />

@@ -169,7 +169,7 @@ const MapScreen = ({ navigation, route }) => {
   };
 
   const formatPrice = (price) => {
-    return `Rp ${price?.toLocaleString() || 0}`;
+    return `Rp ${price?.toLocaleString('id-ID') || 0}`;
   };
 
   const getCategoryInfo = (category) => {

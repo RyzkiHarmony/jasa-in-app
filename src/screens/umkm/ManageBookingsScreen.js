@@ -11,6 +11,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatDateJakarta, formatPrice } from "../../utils/dateUtils";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const ManageBookingsScreen = ({ navigation }) => {
@@ -178,7 +179,7 @@ const ManageBookingsScreen = ({ navigation }) => {
         <View style={styles.infoRow}>
           <Icon name="event" size={16} color="#48bb78" />
           <Text style={styles.bookingDate}>
-            {new Date(item.booking_date).toLocaleDateString("id-ID", {
+            {formatDateJakarta(item.booking_date, {
               weekday: "long",
               year: "numeric",
               month: "long",
@@ -191,10 +192,10 @@ const ManageBookingsScreen = ({ navigation }) => {
 
         <View style={styles.bookingFooter}>
           <Text style={styles.price}>
-            Rp {item.total_price.toLocaleString()}
+            {formatPrice(item.total_price)}
           </Text>
           <Text style={styles.createdAt}>
-            Dibuat: {new Date(item.created_at).toLocaleDateString("id-ID")}
+            Dibuat: {formatDateJakarta(item.created_at)}
           </Text>
         </View>
 

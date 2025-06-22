@@ -16,6 +16,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatPrice } from "../../utils/dateUtils";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const ManageServicesScreen = ({ navigation }) => {
@@ -185,7 +186,7 @@ const ManageServicesScreen = ({ navigation }) => {
       <View style={styles.serviceHeader}>
         <Text style={styles.serviceName}>{item.name}</Text>
         <Text style={styles.servicePrice}>
-          Rp {item.price.toLocaleString()}
+          {formatPrice(item.price)}
         </Text>
       </View>
 

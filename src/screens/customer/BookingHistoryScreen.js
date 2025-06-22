@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatDateJakarta, formatPrice } from "../../utils/dateUtils";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const BookingHistoryScreen = ({ navigation }) => {
@@ -29,10 +30,12 @@ const BookingHistoryScreen = ({ navigation }) => {
     try {
       const db = getDatabase();
       const result = db.getAllSync(
-        `SELECT b.*, s.name as service_name, s.description, u.name as umkm_name
+        `SELECT b.*, s.name as service_name, s.description, u.name as umkm_name,
+                r.id as review_id
          FROM bookings b
          JOIN services s ON b.service_id = s.id
          JOIN users u ON s.umkm_id = u.id
+         LEFT JOIN reviews r ON b.id = r.booking_id
          WHERE b.customer_id = ?
          ORDER BY b.created_at DESC`,
         [user.id]
@@ -109,7 +112,7 @@ const BookingHistoryScreen = ({ navigation }) => {
       <View style={styles.dateRow}>
         <Icon name="event" size={16} color="#48bb78" />
         <Text style={styles.dateText}>
-          {new Date(item.booking_date).toLocaleDateString("id-ID", {
+          {formatDateJakarta(item.booking_date, {
             weekday: "long",
             year: "numeric",
             month: "long",
@@ -121,9 +124,9 @@ const BookingHistoryScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.bookingFooter}>
-        <Text style={styles.price}>Rp {item.total_price.toLocaleString()}</Text>
+        <Text style={styles.price}>{formatPrice(item.total_price)}</Text>
 
-        {item.status === "completed" && (
+        {item.status === "completed" && !item.review_id && (
           <TouchableOpacity
             style={styles.reviewButton}
             onPress={() => handleReview(item)}
@@ -131,10 +134,16 @@ const BookingHistoryScreen = ({ navigation }) => {
             <Text style={styles.reviewButtonText}>Beri Review</Text>
           </TouchableOpacity>
         )}
+        {item.status === "completed" && item.review_id && (
+          <View style={styles.reviewedBadge}>
+            <Icon name="check-circle" size={16} color="#48bb78" />
+            <Text style={styles.reviewedText}>Sudah Direview</Text>
+          </View>
+        )}
       </View>
 
       <Text style={styles.createdAt}>
-        Dibuat: {new Date(item.created_at).toLocaleDateString("id-ID")}
+        Dibuat: {formatDateJakarta(item.created_at)}
       </Text>
     </View>
   );
@@ -320,6 +329,22 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  reviewedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0fff4",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "#48bb78",
+  },
+  reviewedText: {
+    color: "#48bb78",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 4,
   },
   createdAt: {
     fontSize: 12,

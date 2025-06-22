@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatDateJakarta, formatPrice } from '../../utils/dateUtils';
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const DashboardScreen = ({ navigation }) => {
@@ -223,7 +224,7 @@ const DashboardScreen = ({ navigation }) => {
 
         <StatCard
           title="Total Pendapatan"
-          value={`Rp ${stats.totalRevenue.toLocaleString()}`}
+          value={formatPrice(stats.totalRevenue)}
           color="#9c27b0"
           iconName="attach-money"
         />
@@ -303,11 +304,11 @@ const DashboardScreen = ({ navigation }) => {
               <View style={styles.dateRow}>
                 <Icon name="event" size={16} color="#48bb78" />
                 <Text style={styles.dateText}>
-                  {new Date(booking.booking_date).toLocaleDateString("id-ID")}
+                  {formatDateJakarta(booking.booking_date)}
                 </Text>
               </View>
               <Text style={styles.bookingPrice}>
-                Rp {booking.total_price.toLocaleString()}
+                {formatPrice(booking.total_price)}
               </Text>
             </View>
           ))

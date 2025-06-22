@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { formatTimeJakarta } from "../../utils/dateUtils";
 
 const ChatDetailScreen = ({ route, navigation }) => {
   const { chatId, umkmName } = route.params;
@@ -115,10 +116,7 @@ const ChatDetailScreen = ({ route, navigation }) => {
             styles.messageTime,
             isMyMessage ? styles.myMessageTime : styles.otherMessageTime
           ]}>
-            {new Date(item.created_at).toLocaleTimeString('id-ID', {
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
+            {formatTimeJakarta(item.created_at)}
           </Text>
         </View>
       </View>

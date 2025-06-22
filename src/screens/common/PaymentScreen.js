@@ -15,6 +15,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { getCurrentJakartaTime, formatDateJakarta, formatPrice, toDBFormat } from "../../utils/dateUtils";
 
 const PaymentScreen = ({ navigation, route }) => {
   const [payments, setPayments] = useState([]);
@@ -148,7 +149,7 @@ const PaymentScreen = ({ navigation, route }) => {
 
     try {
       const db = getDatabase();
-      const now = new Date().toISOString();
+      const now = toDBFormat(getCurrentJakartaTime());
 
       // Create payment record
       const paymentId = db.runSync(
@@ -199,7 +200,7 @@ const PaymentScreen = ({ navigation, route }) => {
           onPress: () => {
             try {
               const db = getDatabase();
-              const now = new Date().toISOString();
+              const now = toDBFormat(getCurrentJakartaTime());
               
               db.runSync(
                 "UPDATE payments SET status = ?, updated_at = ? WHERE id = ?",
@@ -235,7 +236,7 @@ const PaymentScreen = ({ navigation, route }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+    return formatDateJakarta(dateString, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -244,8 +245,8 @@ const PaymentScreen = ({ navigation, route }) => {
     });
   };
 
-  const formatPrice = (price) => {
-    return `Rp ${price?.toLocaleString() || 0}`;
+  const formatPriceLocal = (price) => {
+    return formatPrice(price || 0);
   };
 
   const getMethodInfo = (method) => {
@@ -319,7 +320,7 @@ const PaymentScreen = ({ navigation, route }) => {
         <View style={styles.paymentDetails}>
           <View style={styles.amountContainer}>
             <Text style={styles.amountLabel}>Total Pembayaran</Text>
-            <Text style={styles.amountValue}>{formatPrice(item.amount)}</Text>
+            <Text style={styles.amountValue}>{formatPriceLocal(item.amount)}</Text>
           </View>
           
           {item.notes && (
@@ -385,7 +386,7 @@ const PaymentScreen = ({ navigation, route }) => {
     return (
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{formatPrice(stats.total)}</Text>
+          <Text style={styles.statNumber}>{formatPriceLocal(stats.total)}</Text>
           <Text style={styles.statLabel}>Total Diterima</Text>
         </View>
         <View style={styles.statCard}>
@@ -478,7 +479,7 @@ const PaymentScreen = ({ navigation, route }) => {
                   {formatDate(selectedBooking.booking_date)}
                 </Text>
                 <Text style={styles.totalAmount}>
-                  {formatPrice(selectedBooking.total_price)}
+                  {formatPriceLocal(selectedBooking.total_price)}
                 </Text>
               </View>
             )}

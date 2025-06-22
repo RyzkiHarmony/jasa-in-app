@@ -14,13 +14,14 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { getCurrentJakartaTime, formatDateJakarta, toDBFormat } from "../../utils/dateUtils";
 
 const ScheduleScreen = ({ navigation }) => {
   const [schedules, setSchedules] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(getCurrentJakartaTime().toISOString().split('T')[0]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -111,7 +112,7 @@ const ScheduleScreen = ({ navigation }) => {
 
     try {
       const db = getDatabase();
-      const now = new Date().toISOString();
+      const now = toDBFormat(getCurrentJakartaTime());
 
       if (editingSchedule) {
         // Update existing schedule
@@ -192,7 +193,7 @@ const ScheduleScreen = ({ navigation }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+    return formatDateJakarta(dateString, {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -206,14 +207,14 @@ const ScheduleScreen = ({ navigation }) => {
 
   const generateDateOptions = () => {
     const dates = [];
-    const today = new Date();
+    const today = getCurrentJakartaTime();
     
     for (let i = 0; i < 14; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       dates.push({
         value: date.toISOString().split('T')[0],
-        label: i === 0 ? "Hari Ini" : i === 1 ? "Besok" : date.toLocaleDateString("id-ID", { 
+        label: i === 0 ? "Hari Ini" : i === 1 ? "Besok" : formatDateJakarta(date, { 
           weekday: "short", 
           day: "numeric", 
           month: "short" 

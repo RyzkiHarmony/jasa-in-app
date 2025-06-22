@@ -356,12 +356,12 @@ const insertDummyData = () => {
 
       // Insert dummy messages
       db.execSync(
-        `INSERT INTO messages (chat_id, sender_id, message, is_read) VALUES 
-        (${laundryChat.id}, ${customerUser.id}, 'Halo, saya ingin tanya tentang layanan laundry', 1),
-        (${laundryChat.id}, ${laundryUser.id}, 'Halo! Ada yang bisa kami bantu?', 1),
-        (${laundryChat.id}, ${customerUser.id}, 'Terima kasih atas pelayanannya!', 1),
-        (${acChat.id}, ${customerUser.id}, 'Kapan bisa datang untuk service AC?', 1),
-        (${acChat.id}, ${acUser.id}, 'Besok pagi bisa pak, jam 9', 0);`
+        `INSERT INTO messages (chat_id, sender_id, sender_type, message, is_read) VALUES 
+        (${laundryChat.id}, ${customerUser.id}, 'customer', 'Halo, saya ingin tanya tentang layanan laundry', 1),
+        (${laundryChat.id}, ${laundryUser.id}, 'umkm', 'Halo! Ada yang bisa kami bantu?', 1),
+        (${laundryChat.id}, ${customerUser.id}, 'customer', 'Terima kasih atas pelayanannya!', 1),
+        (${acChat.id}, ${customerUser.id}, 'customer', 'Kapan bisa datang untuk service AC?', 1),
+        (${acChat.id}, ${acUser.id}, 'umkm', 'Besok pagi bisa pak, jam 9', 0);`
       );
 
       // Insert dummy favorites

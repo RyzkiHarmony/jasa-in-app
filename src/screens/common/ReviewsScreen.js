@@ -15,6 +15,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { getCurrentJakartaTime, formatDateJakarta } from "../../utils/dateUtils";
 
 const ReviewsScreen = ({ navigation, route }) => {
   const [reviews, setReviews] = useState([]);
@@ -137,7 +138,7 @@ const ReviewsScreen = ({ navigation, route }) => {
 
     try {
       const db = getDatabase();
-      const now = new Date().toISOString();
+      const now = getCurrentJakartaTime().toISOString();
 
       db.runSync(
         `INSERT INTO reviews (booking_id, rating, comment, created_at)
@@ -180,7 +181,7 @@ const ReviewsScreen = ({ navigation, route }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+    return formatDateJakarta(dateString, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -190,7 +191,7 @@ const ReviewsScreen = ({ navigation, route }) => {
   };
 
   const formatPrice = (price) => {
-    return `Rp ${price?.toLocaleString() || 0}`;
+    return `Rp ${price?.toLocaleString('id-ID') || 0}`;
   };
 
   const renderStars = (rating, size = 16, interactive = false, onPress = null) => {

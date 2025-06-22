@@ -15,6 +15,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
 import { useAuth } from "../../context/AuthContext";
+import { getCurrentJakartaTime, formatDateJakarta, formatPrice, toDBFormat } from '../../utils/dateUtils';
 
 const TeamManagementScreen = ({ navigation }) => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -89,7 +90,7 @@ const TeamManagementScreen = ({ navigation }) => {
       role: "staff",
       specialization: "",
       salary: "",
-      join_date: new Date().toISOString().split('T')[0],
+      join_date: getCurrentJakartaTime().toISOString().split('T')[0],
       status: "active",
     });
     setModalVisible(true);
@@ -118,7 +119,7 @@ const TeamManagementScreen = ({ navigation }) => {
 
     try {
       const db = getDatabase();
-      const now = new Date().toISOString();
+      const now = toDBFormat(getCurrentJakartaTime());
 
       if (editingMember) {
         // Update existing member
@@ -185,7 +186,7 @@ const TeamManagementScreen = ({ navigation }) => {
               const db = getDatabase();
               db.runSync(
                 "UPDATE team_members SET status = ?, updated_at = ? WHERE id = ?",
-                [newStatus, new Date().toISOString(), member.id]
+                [newStatus, toDBFormat(getCurrentJakartaTime()), member.id]
               );
               loadTeamMembers();
               Alert.alert("Berhasil", `Status ${member.name} berhasil diubah`);
@@ -226,12 +227,12 @@ const TeamManagementScreen = ({ navigation }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "Tidak diketahui";
-    return new Date(dateString).toLocaleDateString("id-ID");
+    return formatDateJakarta(dateString);
   };
 
   const formatSalary = (salary) => {
     if (!salary) return "Tidak diset";
-    return `Rp ${salary.toLocaleString()}`;
+    return formatPrice(salary);
   };
 
   const getRoleInfo = (role) => {
