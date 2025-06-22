@@ -12,17 +12,24 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import getDatabase from "../../database/database";
+import { useAuth } from "../../context/AuthContext";
 
 const UmkmDetailScreen = ({ route, navigation }) => {
   const { umkm } = route.params;
   const [services, setServices] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     loadServices();
-    checkFavoriteStatus();
   }, []);
+  
+  useEffect(() => {
+    if (user && user.id) {
+      checkFavoriteStatus();
+    }
+  }, [user]);
 
   const loadServices = () => {
     try {
@@ -45,11 +52,13 @@ const UmkmDetailScreen = ({ route, navigation }) => {
   };
 
   const checkFavoriteStatus = () => {
+    if (!user || !user.id) return;
+    
     try {
       const db = getDatabase();
       const result = db.getAllSync(
-        `SELECT * FROM favorites WHERE umkm_id = ? AND customer_id = 1`,
-        [umkm.id]
+        `SELECT * FROM favorites WHERE umkm_id = ? AND customer_id = ?`,
+        [umkm.id, user.id]
       );
       setIsFavorite(result.length > 0);
     } catch (error) {
@@ -58,21 +67,26 @@ const UmkmDetailScreen = ({ route, navigation }) => {
   };
 
   const toggleFavorite = () => {
+    if (!user || !user.id) {
+      Alert.alert("Error", "Silakan login terlebih dahulu");
+      return;
+    }
+    
     try {
       const db = getDatabase();
       if (isFavorite) {
         // Remove from favorites
         db.runSync(
-          `DELETE FROM favorites WHERE umkm_id = ? AND customer_id = 1`,
-          [umkm.id]
+          `DELETE FROM favorites WHERE umkm_id = ? AND customer_id = ?`,
+          [umkm.id, user.id]
         );
         setIsFavorite(false);
         Alert.alert("Sukses", "UMKM dihapus dari favorit");
       } else {
         // Add to favorites
         db.runSync(
-          `INSERT INTO favorites (customer_id, umkm_id, created_at) VALUES (1, ?, datetime('now'))`,
-          [umkm.id]
+          `INSERT INTO favorites (customer_id, umkm_id, created_at) VALUES (?, ?, datetime('now'))`,
+          [user.id, umkm.id]
         );
         setIsFavorite(true);
         Alert.alert("Sukses", "UMKM ditambahkan ke favorit");
@@ -84,12 +98,17 @@ const UmkmDetailScreen = ({ route, navigation }) => {
   };
 
   const startChat = () => {
+    if (!user || !user.id) {
+      Alert.alert("Error", "Silakan login terlebih dahulu");
+      return;
+    }
+    
     try {
       const db = getDatabase();
       // Check if chat already exists
       const existingChat = db.getAllSync(
-        `SELECT * FROM chats WHERE customer_id = 1 AND umkm_id = ?`,
-        [umkm.id]
+        `SELECT * FROM chats WHERE customer_id = ? AND umkm_id = ?`,
+        [user.id, umkm.id]
       );
       
       if (existingChat.length > 0) {
@@ -102,8 +121,8 @@ const UmkmDetailScreen = ({ route, navigation }) => {
         // Create new chat
         const result = db.runSync(
           `INSERT INTO chats (customer_id, umkm_id, last_message, last_message_time, created_at) 
-           VALUES (1, ?, 'Chat dimulai', datetime('now'), datetime('now'))`,
-          [umkm.id]
+           VALUES (?, ?, 'Chat dimulai', datetime('now'), datetime('now'))`,
+          [user.id, umkm.id]
         );
         
         // Navigate to new chat

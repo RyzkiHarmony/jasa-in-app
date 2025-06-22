@@ -54,7 +54,7 @@ const ChatScreen = ({ navigation }) => {
   };
 
   const handleChatPress = (chat) => {
-    navigation.navigate("ChatDetail", { 
+    navigation.getParent()?.navigate("ChatDetail", { 
       chatId: chat.id,
       umkmName: chat.umkm_name,
       umkmImage: chat.umkm_image

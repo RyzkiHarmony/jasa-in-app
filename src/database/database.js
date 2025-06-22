@@ -115,15 +115,6 @@ const createTables = () => {
         console.log('image column already exists or other error:', error.message);
       }
 
-      // Add sender_type column to messages table if it doesn't exist
-      try {
-        db.execSync(`ALTER TABLE messages ADD COLUMN sender_type TEXT DEFAULT 'customer';`);
-        console.log('Added sender_type column to messages table');
-      } catch (error) {
-        // Column might already exist, ignore error
-        console.log('sender_type column already exists or other error:', error.message);
-      }
-
       // Chats table
       db.execSync(
         `CREATE TABLE IF NOT EXISTS chats (
@@ -152,6 +143,15 @@ const createTables = () => {
           FOREIGN KEY (sender_id) REFERENCES users (id)
         );`
       );
+
+      // Add sender_type column to messages table if it doesn't exist
+      try {
+        db.execSync(`ALTER TABLE messages ADD COLUMN sender_type TEXT DEFAULT 'customer';`);
+        console.log('Added sender_type column to messages table');
+      } catch (error) {
+        // Column might already exist, ignore error
+        console.log('sender_type column already exists or other error:', error.message);
+      }
 
       // Favorites table
       db.execSync(

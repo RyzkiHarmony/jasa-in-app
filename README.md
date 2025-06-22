@@ -11,6 +11,9 @@ Aplikasi mobile untuk platform layanan jasa berbasis React Native dengan Expo da
 - **Booking**: Pesan layanan dengan form booking lengkap
 - **Riwayat**: Lihat riwayat pemesanan
 - **Review**: Berikan rating dan ulasan untuk layanan
+- **Favorit**: Simpan UMKM favorit untuk akses cepat
+- **Chat**: Komunikasi langsung dengan UMKM
+- **Notifikasi**: Terima pemberitahuan penting
 - **Profil**: Kelola informasi profil pengguna
 
 ### Untuk UMKM:
@@ -18,6 +21,8 @@ Aplikasi mobile untuk platform layanan jasa berbasis React Native dengan Expo da
 - **Dashboard**: Statistik dan overview bisnis
 - **Kelola Booking**: Terima, konfirmasi, dan kelola pesanan
 - **Kelola Layanan**: Tambah, edit, dan hapus layanan
+- **Chat**: Komunikasi dengan customer
+- **Notifikasi**: Terima pemberitahuan pesanan dan pesan
 - **Profil**: Kelola informasi UMKM
 
 ## Teknologi yang Digunakan
@@ -69,6 +74,43 @@ Aplikasi mobile untuk platform layanan jasa berbasis React Native dengan Expo da
 - service_id (FOREIGN KEY)
 - rating (INTEGER)
 - comment (TEXT)
+
+### Tabel Favorites
+
+- id (PRIMARY KEY)
+- customer_id (FOREIGN KEY)
+- umkm_id (FOREIGN KEY)
+- created_at (TEXT)
+
+### Tabel Chats
+
+- id (PRIMARY KEY)
+- customer_id (FOREIGN KEY)
+- umkm_id (FOREIGN KEY)
+- last_message (TEXT)
+- last_message_time (TEXT)
+- unread_count (INTEGER)
+- created_at (TEXT)
+
+### Tabel Messages
+
+- id (PRIMARY KEY)
+- chat_id (FOREIGN KEY)
+- sender_id (FOREIGN KEY)
+- sender_type (TEXT) - 'customer' atau 'umkm'
+- message (TEXT)
+- timestamp (TEXT)
+- is_read (INTEGER)
+
+### Tabel Notifications
+
+- id (PRIMARY KEY)
+- user_id (FOREIGN KEY)
+- title (TEXT)
+- message (TEXT)
+- type (TEXT)
+- is_read (INTEGER)
+- created_at (TEXT)
 
 ## Instalasi dan Menjalankan Aplikasi
 
@@ -136,11 +178,17 @@ src/
 │   │   ├── BookingFormScreen.js
 │   │   ├── BookingHistoryScreen.js
 │   │   ├── ReviewFormScreen.js
+│   │   ├── FavoritesScreen.js
+│   │   ├── ChatScreen.js
+│   │   ├── ChatDetailScreen.js
+│   │   ├── NotificationsScreen.js
 │   │   └── ProfileScreen.js
 │   └── umkm/                  # Screens untuk UMKM
 │       ├── DashboardScreen.js
 │       ├── ManageBookingsScreen.js
-│       └── ManageServicesScreen.js
+│       ├── ManageServicesScreen.js
+│       ├── ChatScreen.js
+│       └── NotificationsScreen.js
 └── utils/                     # Utility functions (jika diperlukan)
 ```
 
@@ -153,6 +201,9 @@ src/
 ✅ **Sistem booking** dengan form lengkap
 ✅ **Manajemen booking** untuk UMKM
 ✅ **Sistem review dan rating**
+✅ **Sistem favorit** untuk customer
+✅ **Sistem chat** real-time antara customer dan UMKM
+✅ **Sistem notifikasi** untuk kedua role
 ✅ **Dashboard statistik** untuk UMKM
 ✅ **Profil pengguna** yang dapat diedit
 ✅ **Data dummy** untuk testing

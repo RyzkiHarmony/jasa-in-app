@@ -31,7 +31,7 @@ const ChatDetailScreen = ({ route, navigation }) => {
       const result = db.getAllSync(
         `SELECT m.*, 
                 CASE 
-                  WHEN m.sender_type = 'customer' THEN 'Anda'
+                  WHEN m.sender_type = 'umkm' THEN 'Anda'
                   ELSE ? 
                 END as sender_name
          FROM messages m 
@@ -43,7 +43,13 @@ const ChatDetailScreen = ({ route, navigation }) => {
       
       // Mark messages as read
       db.runSync(
-        `UPDATE messages SET is_read = 1 WHERE chat_id = ? AND sender_type = 'umkm'`,
+        `UPDATE messages SET is_read = 1 WHERE chat_id = ? AND sender_type = 'customer'`,
+        [chatId]
+      );
+      
+      // Reset unread count for this chat
+      db.runSync(
+        `UPDATE chats SET unread_count = 0 WHERE id = ?`,
         [chatId]
       );
     } catch (error) {
@@ -64,7 +70,7 @@ const ChatDetailScreen = ({ route, navigation }) => {
       // Insert new message
       db.runSync(
         `INSERT INTO messages (chat_id, sender_id, sender_type, message, created_at, is_read) 
-         VALUES (?, ?, 'customer', ?, datetime('now'), 1)`,
+         VALUES (?, ?, 'umkm', ?, datetime('now'), 1)`,
         [chatId, user.id, newMessage.trim()]
       );
       
@@ -72,8 +78,7 @@ const ChatDetailScreen = ({ route, navigation }) => {
       db.runSync(
         `UPDATE chats SET 
          last_message = ?, 
-         last_message_time = datetime('now'),
-         unread_count = unread_count + 1
+         last_message_time = datetime('now')
          WHERE id = ?`,
         [newMessage.trim(), chatId]
       );
@@ -89,7 +94,7 @@ const ChatDetailScreen = ({ route, navigation }) => {
   };
 
   const renderMessage = ({ item }) => {
-    const isMyMessage = item.sender_type === 'customer';
+    const isMyMessage = item.sender_type === 'umkm';
     
     return (
       <View style={[

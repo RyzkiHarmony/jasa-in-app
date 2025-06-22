@@ -61,7 +61,7 @@ const NotificationsScreen = ({ navigation }) => {
         navigation.navigate("BookingHistory");
         break;
       case "chat":
-        navigation.navigate("ChatDetail", {
+        navigation.getParent()?.navigate("ChatDetail", {
           chatId: notification.reference_id,
           umkmName: notification.sender_name,
         });

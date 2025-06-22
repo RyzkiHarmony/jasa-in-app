@@ -31,6 +31,8 @@ import AnalyticsScreen from "../screens/umkm/AnalyticsScreen";
 import PromotionsScreen from "../screens/umkm/PromotionsScreen";
 import ScheduleScreen from "../screens/umkm/ScheduleScreen";
 import TeamManagementScreen from "../screens/umkm/TeamManagementScreen";
+import UMKMChatScreen from "../screens/umkm/ChatScreen";
+import UMKMChatDetailScreen from "../screens/umkm/ChatDetailScreen";
 
 // Common Screens
 import ReviewsScreen from "../screens/common/ReviewsScreen";
@@ -255,6 +257,23 @@ const UMKMTabs = () => {
         }}
       />
       <Tab.Screen
+        name="UMKMChat"
+        component={UMKMChatScreen}
+        options={{
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ color, focused }) => (
+            <Icon
+              name="chat"
+              size={focused ? 23 : 20}
+              color={color}
+              style={{
+                transform: [{ scale: focused ? 1.1 : 1 }],
+              }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Analytics"
         component={AnalyticsScreen}
         options={{
@@ -437,6 +456,13 @@ const AppNavigator = () => {
                 <Stack.Screen
                   name="Map"
                   component={MapScreen}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="ChatDetail"
+                  component={UMKMChatDetailScreen}
                   options={{
                     headerShown: false,
                   }}

@@ -20,12 +20,25 @@ const FavoritesScreen = ({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      loadFavorites();
+      if (user && user.id) {
+        loadFavorites();
+      }
     });
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, user]);
+  
+  useEffect(() => {
+    if (user && user.id) {
+      loadFavorites();
+    }
+  }, [user]);
 
   const loadFavorites = () => {
+    if (!user || !user.id) {
+      setFavorites([]);
+      return;
+    }
+    
     try {
       const db = getDatabase();
       const result = db.getAllSync(
@@ -50,6 +63,11 @@ const FavoritesScreen = ({ navigation }) => {
   };
 
   const removeFavorite = (umkmId) => {
+    if (!user || !user.id) {
+      Alert.alert("Error", "Silakan login terlebih dahulu");
+      return;
+    }
+    
     Alert.alert(
       "Hapus Favorit",
       "Apakah Anda yakin ingin menghapus UMKM ini dari favorit?",
